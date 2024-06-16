@@ -25,7 +25,7 @@ data['CSA2020'] = data['properties.CSA2020']
 data['wrkout20'] = data['properties.wrkout20']
 
 # Create a Streamlit app
-st.title('Interactive Map of Baltimore City")
+st.title("Interactive Map of Baltimore City")
 
 # Sidebar for selecting census tract
 st.sidebar.title("Filter Census Tracts")
