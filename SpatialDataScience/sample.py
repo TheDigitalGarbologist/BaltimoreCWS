@@ -57,12 +57,12 @@ for feature in geojson_data['features']:
 # Create a folium map with Esri hybrid imagery tiles
 m = folium.Map(location=[39.2904, -76.6122], zoom_start=11, scrollWheelZoom=False)
 
-# Add Esri Imagery tile layer
+# Add Esri World Imagery Labels tile layer last to appear above the choropleth
 folium.TileLayer(
-    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attr='Tiles © Esri',
-    name='Esri Imagery',
-    overlay=False,
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    attr='Labels © Esri',
+    name='Esri World Imagery Labels',
+    overlay=True,
     control=True
 ).add_to(m)
 
@@ -79,17 +79,14 @@ folium.Choropleth(
     legend_name="Percent of Employed Residents who Work Outside the City"
 ).add_to(m)
 
-# Add Esri World Imagery Labels tile layer last to appear above the choropleth
+# Add Esri Imagery tile layer
 folium.TileLayer(
-    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-    attr='Labels © Esri',
-    name='Esri World Imagery Labels',
-    overlay=True,
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attr='Tiles © Esri',
+    name='Esri Imagery',
+    overlay=False,
     control=True
 ).add_to(m)
-
-# Add layer control
-folium.LayerControl().add_to(m)
 
 # Highlight the selected community statistical area
 if st.session_state.selected_tract != 'All':
@@ -106,7 +103,8 @@ if st.session_state.selected_tract != 'All':
             },
         ).add_to(m)
 
-
+# Add layer control
+folium.LayerControl().add_to(m)
 
 # Display the map
 folium_static(m)
@@ -115,15 +113,15 @@ folium_static(m)
 st.markdown("""
 <div style="position: fixed; 
      bottom: 50px; left: 50px; width: 200px; 
-     background: white; z-index: 1000; padding: 10px; 
-     border: 2px solid grey; border-radius: 5px;">
-    <h4>Legend</h4>
-    <i style="background: #f7fbff; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 0 - 10%<br>
-    <i style="background: #deebf7; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 10 - 20%<br>
-    <i style="background: #c6dbef; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 20 - 30%<br>
-    <i style="background: #9ecae1; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 30 - 40%<br>
-    <i style="background: #6baed6; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 40 - 50%<br>
-    <i style="background: #3182bd; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 50 - 60%<br>
-    <i style="background: #08519c; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> 60 - 70%<br>
+     background: #333; z-index: 1000; padding: 10px; 
+     border: 2px solid grey; border-radius: 5px; color: white;">
+    <h4 style="color: white; text-shadow: 1px 1px 2px black;">Legend</h4>
+    <i style="background: #f7fbff; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">0 - 10%</span><br>
+    <i style="background: #deebf7; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">10 - 20%</span><br>
+    <i style="background: #c6dbef; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">20 - 30%</span><br>
+    <i style="background: #9ecae1; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">30 - 40%</span><br>
+    <i style="background: #6baed6; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">40 - 50%</span><br>
+    <i style="background: #3182bd; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">50 - 60%</span><br>
+    <i style="background: #08519c; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7;"></i> <span style="color: white; text-shadow: 1px 1px 2px black;">60 - 70%</span><br>
 </div>
 """, unsafe_allow_html=True)
