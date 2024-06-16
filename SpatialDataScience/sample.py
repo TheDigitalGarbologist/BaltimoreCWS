@@ -54,7 +54,7 @@ for feature in geojson_data['features']:
     value = feature['properties']['wrkout20']
     feature['properties']['fill_color'] = map_to_color(value, min_val, max_val, color_ramp)
 
-# Create a folium map
+# Create a folium map with satellite imagery and map labels
 m = folium.Map(location=[39.2904, -76.6122], zoom_start=10, tiles='CartoDB positron')
 
 # Add choropleth layer
