@@ -55,7 +55,7 @@ for feature in geojson_data['features']:
     feature['properties']['fill_color'] = map_to_color(value, min_val, max_val, color_ramp)
 
 # Create a folium map with Esri hybrid imagery tiles
-m = folium.Map(location=[39.2904, -76.6122], zoom_start=10, scrollWheelZoom=False)
+m = folium.Map(location=[39.2904, -76.6122], zoom_start=11, scrollWheelZoom=False)
 
 # Add Esri Imagery tile layer
 folium.TileLayer(
