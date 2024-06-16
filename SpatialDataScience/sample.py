@@ -54,8 +54,17 @@ for feature in geojson_data['features']:
     value = feature['properties']['wrkout20']
     feature['properties']['fill_color'] = map_to_color(value, min_val, max_val, color_ramp)
 
-# Create a folium map with satellite imagery and map labels
-m = folium.Map(location=[39.2904, -76.6122], zoom_start=10, tiles='CartoDB positron')
+# Create a folium map with Esri hybrid imagery tiles
+m = folium.Map(location=[39.2904, -76.6122], zoom_start=10, scrollWheelZoom=False)
+
+# Add Esri Imagery tile layer
+folium.TileLayer(
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attr='Tiles © Esri',
+    name='Esri Imagery',
+    overlay=False,
+    control=True
+).add_to(m)
 
 # Add choropleth layer
 folium.Choropleth(
@@ -84,6 +93,15 @@ if st.session_state.selected_tract != 'All':
                 "fillOpacity": 0.6,
             },
         ).add_to(m)
+
+# Add Esri World Imagery Labels tile layer last to appear above the choropleth
+folium.TileLayer(
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    attr='Labels © Esri',
+    name='Esri World Imagery Labels',
+    overlay=True,
+    control=True
+).add_to(m)
 
 # Add layer control
 folium.LayerControl().add_to(m)
