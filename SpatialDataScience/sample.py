@@ -32,16 +32,6 @@ st.sidebar.title("Filter Community Statistical Area")
 tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 
-# Basemap selector at the bottom
-basemap = st.selectbox("Select Basemap", ["Light", "Dark", "Satellite"], index=2, key='basemap_selector')
-
-# Set the basemap style
-basemap_style = {
-    "Light": "mapbox://styles/mapbox/light-v10",
-    "Dark": "mapbox://styles/mapbox/dark-v10",
-    "Satellite": "mapbox://styles/mapbox/satellite-v9"
-}[basemap]
-
 # Prepare color ramp (blue chromatic scale)
 color_ramp = colorbrewer.Blues[7]  # Using a 7-class Blues color ramp
 
@@ -53,6 +43,11 @@ def map_to_color(value, min_val, max_val, color_ramp):
 # Calculate min and max values for the color mapping
 min_val = data['wrkout20'].min()
 max_val = data['wrkout20'].max()
+
+# Add color to each feature in the geojson data
+for feature in geojson_data['features']:
+    value = feature['properties']['wrkout20']
+    feature['properties']['fill_color'] = map_to_color(value, min_val, max_val, color_ramp)
 
 # Prepare the layers for PyDeck
 layers = []
@@ -66,7 +61,7 @@ choropleth_layer = pdk.Layer(
     filled=True,
     extruded=False,
     wireframe=True,
-    get_fill_color=f"[255 - properties.wrkout20 * 2, 255 - properties.wrkout20 * 5, 255]",
+    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 255]",
     get_line_color=[0, 0, 0],
     get_line_width=1,
 )
@@ -99,11 +94,11 @@ view_state = pdk.ViewState(
     pitch=0,
 )
 
-# Create the deck.gl map
+# Create the deck.gl map with satellite basemap and labels
 deck = pdk.Deck(
     layers=layers,
     initial_view_state=view_state,
-    map_style=basemap_style,
+    map_style='mapbox://styles/mapbox/satellite-streets-v11',
     tooltip={"text": "{CSA2020}\n{wrkout20}% of residents work outside the city"},
 )
 
