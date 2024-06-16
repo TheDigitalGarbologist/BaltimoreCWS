@@ -95,7 +95,7 @@ fig.update_layout(
     mapbox_center={"lat": 39.2904, "lon": -76.6122},
     margin={"r":0,"t":0,"l":0,"b":0},
     coloraxis_colorbar={
-        'title': '% Work Outside City',
+        'title': {'text': 'Percent of Employed<br>Residents who Work<br>Outside the City', 'side': 'right'},
         'tickvals': [0, 10, 20, 30, 40, 50, 60, 70],
         'ticktext': ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%']
     }
