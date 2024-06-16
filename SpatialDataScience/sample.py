@@ -2,7 +2,6 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import requests
-import plotly.express as px
 
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
@@ -39,25 +38,18 @@ st.session_state.selected_tract = selected_tract
 
 # Color ramp options
 color_ramps = {
-    'Blues': px.colors.sequential.Blues,
-    'Viridis': px.colors.sequential.Viridis,
-    'Cividis': px.colors.sequential.Cividis,
-    'Inferno': px.colors.sequential.Inferno,
-    'Magma': px.colors.sequential.Magma,
-    'Plasma': px.colors.sequential.Plasma
+    'Blues': 'Blues',
+    'Viridis': 'Viridis',
+    'Cividis': 'Cividis',
+    'Inferno': 'Inferno',
+    'Magma': 'Magma',
+    'Plasma': 'Plasma'
 }
 selected_color_ramp = st.sidebar.selectbox("Select Color Ramp", list(color_ramps.keys()), index=0)
 
 # Define opacity settings
 fill_opacity = 0.75
 marker_line_opacity = 1.0
-
-# Function to generate RGBA colorscale with defined opacity
-def generate_colorscale(base_colors, opacity):
-    return [[i / (len(base_colors) - 1), f'rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, {opacity})'] for i, color in enumerate(base_colors)]
-
-# Create customized color scale with defined opacity
-color_ramp = generate_colorscale(color_ramps[selected_color_ramp], fill_opacity)
 
 # Create Plotly map
 fig = go.Figure(
@@ -66,7 +58,7 @@ fig = go.Figure(
         featureidkey='properties.CSA2020',
         locations=data['CSA2020'],
         z=data['wrkout20'],
-        colorscale=color_ramp,
+        colorscale=color_ramps[selected_color_ramp],
         zauto=True,
         showscale=True,
         marker_line_width=0.5,
