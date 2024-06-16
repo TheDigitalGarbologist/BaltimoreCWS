@@ -3,6 +3,7 @@ import folium
 import requests
 from streamlit_folium import folium_static
 import pandas as pd
+import geopandas as gpd
 
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
