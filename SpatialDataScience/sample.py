@@ -1,5 +1,4 @@
 import streamlit as st
-import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
 import requests
@@ -41,18 +40,18 @@ st.session_state.selected_tract = selected_tract
 color_ramp = px.colors.sequential.Blues
 
 # Create Plotly map
-fig = px.choropleth_mapbox(
-    data,
-    geojson=geojson_data,
-    locations='properties.CSA2020',
-    featureidkey='properties.CSA2020',
-    color='wrkout20',
-    color_continuous_scale=color_ramp,
-    mapbox_style="satellite-streets",
-    zoom=11,
-    center={"lat": 39.2904, "lon": -76.6122},
-    opacity=0.7,
-    labels={'wrkout20': '% Work Outside City'}
+fig = go.Figure(
+    go.Choroplethmapbox(
+        geojson=geojson_data,
+        featureidkey='properties.CSA2020',
+        locations=data['CSA2020'],
+        z=data['wrkout20'],
+        colorscale=color_ramp,
+        zauto=True,
+        showscale=True,
+        marker_opacity=0.7,
+        marker_line_width=0.5
+    )
 )
 
 # Highlight the selected community statistical area
@@ -62,8 +61,8 @@ if st.session_state.selected_tract != 'All':
         selected_data = pd.DataFrame([selected_geom['properties']])
         selected_layer = go.Choroplethmapbox(
             geojson=geojson_data,
-            locations=selected_data['CSA2020'],
-            z=selected_data['wrkout20'],
+            locations=[st.session_state.selected_tract],
+            z=[selected_geom['properties']['wrkout20']],
             colorscale=[[0, "orange"], [1, "orange"]],
             showscale=False,
             marker_line_width=3,
@@ -75,6 +74,9 @@ if st.session_state.selected_tract != 'All':
 
 # Update layout for the map
 fig.update_layout(
+    mapbox_style="carto-positron",
+    mapbox_zoom=11,
+    mapbox_center={"lat": 39.2904, "lon": -76.6122},
     margin={"r":0,"t":0,"l":0,"b":0},
     coloraxis_colorbar={
         'title': '% Work Outside City',
