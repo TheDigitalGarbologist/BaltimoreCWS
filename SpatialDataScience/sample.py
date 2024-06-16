@@ -36,9 +36,6 @@ tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 st.session_state.selected_tract = selected_tract
 
-# Prepare color ramp
-color_ramp = px.colors.sequential.Blues
-
 # Create Plotly map
 fig = go.Figure(
     go.Choroplethmapbox(
@@ -46,7 +43,7 @@ fig = go.Figure(
         featureidkey='properties.CSA2020',
         locations=data['CSA2020'],
         z=data['wrkout20'],
-        colorscale=color_ramp,
+        colorscale='Blues',
         zauto=True,
         showscale=True,
         marker_opacity=0.7,
