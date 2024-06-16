@@ -28,10 +28,10 @@ data['wrkout20'] = data['properties.wrkout20']
 # Create a Streamlit app
 st.title("Interactive Map of Baltimore City")
 
-# Sidebar for selecting census tract
+# Sidebar for selecting community statistical area
 st.sidebar.title("Filter Community Statistical Area")
-tracts = data['CSA2020'].unique()
-selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tracts)
+tracts = ['All'] + list(data['CSA2020'].unique())
+selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 
 # Convert GeoJSON to GeoDataFrame
 gdf = gpd.GeoDataFrame.from_features(geojson_data["features"])
@@ -55,15 +55,18 @@ folium.Choropleth(
     legend_name="Percent of Employed Residents who Work Outside the City"
 ).add_to(map_baltimore)
 
-# Apply zoom and highlight only if a specific census tract is selected
+# Apply zoom and highlight only if a specific community statistical area is selected
 if selected_tract != 'All':
     selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == selected_tract), None)
     if selected_geom:
-        centroid = selected_geom['geometry']['coordinates'][0][0]  # Correctly extract the centroid
-        map_baltimore.location = [centroid[1], centroid[0]]
+        # Calculate the centroid for zooming
+        selected_gdf = gpd.GeoDataFrame.from_features([selected_geom])
+        selected_centroid = selected_gdf.geometry.centroid.unary_union.centroid
+        
+        map_baltimore.location = [selected_centroid.y, selected_centroid.x]
         map_baltimore.zoom_start = 14
 
-        # Highlight the selected census tract
+        # Highlight the selected community statistical area
         folium.GeoJson(
             selected_geom,
             style_function=lambda x: {
