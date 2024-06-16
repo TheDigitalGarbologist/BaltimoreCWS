@@ -61,7 +61,7 @@ choropleth_layer = pdk.Layer(
     filled=True,
     extruded=False,
     wireframe=True,
-    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 255]",
+    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 85]",  # 33% transparency
     get_line_color=[0, 0, 0],
     get_line_width=1,
 )
@@ -90,7 +90,7 @@ if selected_tract != 'All':
 view_state = pdk.ViewState(
     latitude=39.2904,  # Centered on Baltimore City
     longitude=-76.6122,
-    zoom=10,
+    zoom=11,
     pitch=0,
 )
 
