@@ -29,7 +29,7 @@ data['wrkout20'] = data['properties.wrkout20']
 st.title("Interactive Map of Baltimore City")
 
 # Sidebar for selecting census tract
-st.sidebar.title("Filter Census Tracts")
+st.sidebar.title("Filter Community Statistical Area")
 tracts = data['CSA2020'].unique()
 selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tracts)
 
@@ -55,23 +55,24 @@ folium.Choropleth(
     legend_name="Percent of Employed Residents who Work Outside the City"
 ).add_to(map_baltimore)
 
-# Zoom to the selected census tract
-selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == selected_tract), None)
-if selected_geom:
-    centroid = selected_geom['geometry']['coordinates'][0][0]  # Correctly extract the centroid
-    map_baltimore.location = [centroid[1], centroid[0]]
-    map_baltimore.zoom_start = 14
+# Apply zoom and highlight only if a specific census tract is selected
+if selected_tract != 'All':
+    selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == selected_tract), None)
+    if selected_geom:
+        centroid = selected_geom['geometry']['coordinates'][0][0]  # Correctly extract the centroid
+        map_baltimore.location = [centroid[1], centroid[0]]
+        map_baltimore.zoom_start = 14
 
-    # Highlight the selected census tract
-    folium.GeoJson(
-        selected_geom,
-        style_function=lambda x: {
-            "fillColor": "#ffaf00",
-            "color": "#ffaf00",
-            "weight": 2,
-            "fillOpacity": 0.6,
-        },
-    ).add_to(map_baltimore)
+        # Highlight the selected census tract
+        folium.GeoJson(
+            selected_geom,
+            style_function=lambda x: {
+                "fillColor": "#ffaf00",
+                "color": "#ffaf00",
+                "weight": 2,
+                "fillOpacity": 0.6,
+            },
+        ).add_to(map_baltimore)
 
 # Display the map in the Streamlit app
 folium_static(map_baltimore)
