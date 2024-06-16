@@ -1,4 +1,4 @@
-# Project Plan: Identifying Optimal Locations for Co-Working Spaces in Baltimore City using Open Data
+# Project Plan: Identifying Optimal Locations for Co-Working Spaces in Baltimore City
 
 ## Introduction
 The rise of remote work has fundamentally changed how people use and interact with workspace environments. Many remote workers face challenges such as limited space at home, distractions, and the need for professional settings to foster productivity and collaboration. This project aims to address these issues by identifying the most suitable locations for co-working spaces in Baltimore City.
@@ -21,6 +21,9 @@ The primary objective of this project is to leverage open data to pinpoint the b
 1. **Analyze Open Data**: Open data from the City of Baltimore, the State of Maryland, OpenStreetMap, and other relevant sources will be utilized. These data sources offer a wealth of information that can help identify locations with high potential for co-working spaces, such as areas with high population density, good public transportation links, and ample amenities.
 2. **Develop Suitability Criteria**: The criteria for what makes a location suitable for a co-working space will be carefully defined and applied. These criteria include factors such as population density, proximity to public transportation, internet access, and nearby amenities. These factors are essential in ensuring that the chosen locations meet the needs of remote workers and small businesses.
 3. **Communicate Findings**: The findings will be communicated through visualizations and reports to ensure that stakeholders and decision-makers can understand and act on the information. Effective communication is key to the success of this project, as it will help garner support and resources for implementing the proposed co-working spaces.
+
+## Advocacy for Community-Owned Co-Working Spaces
+An essential aspect of this project is advocating for community-owned co-working spaces. These spaces are not just about providing a place to work but also about empowering local communities. By using grant money to convert vacant lots into vibrant co-working spaces, we aim to foster a sense of ownership and pride within the community. These spaces will be designed to meet the needs of the community, providing affordable and accessible work environments while revitalizing underutilized urban spaces.
 
 ## Importance and Community Impact
 The project seeks to create more neighborhood co-working spaces to support remote workers, including those with children or limited home office space. These spaces will enhance productivity, foster community connections, and stimulate local economies. By strategically placing co-working spaces in accessible locations, we can reduce commute times, support work-life balance, and provide safe, professional environments for individuals and small businesses.
@@ -99,5 +102,3 @@ In this final phase, we will present our findings to stakeholders and organize r
 | Maryland State Data Portal     | Economic, health, environmental               | [Maryland State Data](https://opendata.maryland.gov/) |
 | OpenStreetMap                  | Geospatial data                               | [OpenStreetMap](https://www.openstreetmap.org/) |
 | Commercial Data Providers      | Internet availability, market data            | Various providers                       |
-
-
