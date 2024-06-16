@@ -90,8 +90,8 @@ if selected_tract != 'All':
 view_state = pdk.ViewState(
     latitude=39.2904,  # Centered on Baltimore City
     longitude=-76.6122,
-    zoom=11,
-    pitch=0,
+    zoom=10,
+    pitch=30,
 )
 
 # Create the deck.gl map with satellite basemap and labels
