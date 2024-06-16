@@ -2,7 +2,6 @@ import streamlit as st
 import folium
 import geopandas as gpd
 from streamlit_folium import folium_static
-from folium.plugins import GeoJson
 
 # Load the census tract data
 @st.cache
@@ -47,7 +46,7 @@ if not selected_geom.empty:
     map_baltimore.zoom_start = 14
 
 # Highlight the selected census tract
-GeoJson(
+folium.GeoJson(
     selected_geom,
     style_function=lambda x: {
         "fillColor": "#ffaf00",
