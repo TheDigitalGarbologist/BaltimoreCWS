@@ -30,29 +30,39 @@ if 'selected_tract' not in st.session_state:
 # Create a Streamlit app
 st.title("Interactive Map of Baltimore City")
 
-# Sidebar for selecting community statistical area
-st.sidebar.title("Filter Community Statistical Area")
+# Sidebar for selecting community statistical area and color ramp
+st.sidebar.title("Map Settings")
 tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 st.session_state.selected_tract = selected_tract
+
+# Color ramp options
+color_ramps = {
+    'Blues': 'Blues',
+    'Viridis': 'Viridis',
+    'Cividis': 'Cividis',
+    'Inferno': 'Inferno',
+    'Magma': 'Magma',
+    'Plasma': 'Plasma'
+}
+selected_color_ramp = st.sidebar.selectbox("Select Color Ramp", list(color_ramps.keys()), index=0)
 
 # Define opacity settings
 fill_opacity = 0.75
 marker_line_opacity = 1.0
 
+# Function to generate RGBA colorscale with defined opacity
+def generate_colorscale(base_colors, opacity):
+    return [[i/len(base_colors), f'rgba{color[:-1]}, {opacity})'] for i, color in enumerate(base_colors)]
+
 # Create customized color scale with defined opacity
-color_ramp = [
-    [0, f'rgba(247, 251, 255, {fill_opacity})'],
-    [0.1, f'rgba(222, 235, 247, {fill_opacity})'],
-    [0.2, f'rgba(198, 219, 239, {fill_opacity})'],
-    [0.3, f'rgba(158, 202, 225, {fill_opacity})'],
-    [0.4, f'rgba(107, 174, 214, {fill_opacity})'],
-    [0.5, f'rgba(66, 146, 198, {fill_opacity})'],
-    [0.6, f'rgba(33, 113, 181, {fill_opacity})'],
-    [0.7, f'rgba(8, 81, 156, {fill_opacity})'],
-    [0.8, f'rgba(8, 48, 107, {fill_opacity})'],
-    [1, f'rgba(3, 19, 43, {fill_opacity})']
+base_colors = [
+    'rgb(247, 251, 255)', 'rgb(222, 235, 247)', 'rgb(198, 219, 239)',
+    'rgb(158, 202, 225)', 'rgb(107, 174, 214)', 'rgb(66, 146, 198)',
+    'rgb(33, 113, 181)', 'rgb(8, 81, 156)', 'rgb(8, 48, 107)', 'rgb(3, 19, 43)'
 ]
+
+color_ramp = generate_colorscale(base_colors, fill_opacity)
 
 # Create Plotly map
 fig = go.Figure(
@@ -61,7 +71,7 @@ fig = go.Figure(
         featureidkey='properties.CSA2020',
         locations=data['CSA2020'],
         z=data['wrkout20'],
-        colorscale=color_ramp,
+        colorscale=color_ramps[selected_color_ramp],
         zauto=True,
         showscale=True,
         marker_line_width=0.5,
@@ -95,7 +105,7 @@ fig.update_layout(
     mapbox_center={"lat": 39.2904, "lon": -76.6122},
     margin={"r":0,"t":0,"l":0,"b":0},
     coloraxis_colorbar={
-        'title': {'text': 'Percent of Employed<br>Residents who Work<br>Outside the City', 'side': 'right'},
+        'title': '% Work Outside City',
         'tickvals': [0, 10, 20, 30, 40, 50, 60, 70],
         'ticktext': ['0%', '10%', '20%', '30%', '40%', '50%', '60%', '70%']
     }
