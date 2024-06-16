@@ -40,7 +40,7 @@ gdf = gpd.GeoDataFrame.from_features(geojson_data["features"])
 centroid = gdf.geometry.centroid.unary_union.centroid
 
 # Create a Folium map centered on Baltimore City
-map_baltimore = folium.Map(location=centroid, zoom_start=11)
+map_baltimore = folium.Map(location=(centroid.y, centroid.x), zoom_start=11)
 
 # Add a choropleth layer to the map
 folium.Choropleth(
