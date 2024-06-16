@@ -1,9 +1,7 @@
 import streamlit as st
-import folium
+import pydeck as pdk
 import requests
-from streamlit_folium import folium_static
 import pandas as pd
-import geopandas as gpd
 
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
@@ -33,49 +31,57 @@ st.sidebar.title("Filter Community Statistical Area")
 tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 
-# Convert GeoJSON to GeoDataFrame
-gdf = gpd.GeoDataFrame.from_features(geojson_data["features"])
+# Prepare the layers for PyDeck
+layers = []
 
-# Calculate the centroid of the entire GeoDataFrame
-centroid = gdf.geometry.centroid.unary_union.centroid
+# Add a GeoJsonLayer for the choropleth
+choropleth_layer = pdk.Layer(
+    "GeoJsonLayer",
+    geojson_data,
+    pickable=True,
+    stroked=True,
+    filled=True,
+    extruded=False,
+    wireframe=True,
+    get_fill_color="[255, 255, properties.wrkout20 * 5]",
+    get_line_color=[0, 0, 0],
+    get_line_width=1,
+)
 
-# Create a Folium map centered on Baltimore City
-map_baltimore = folium.Map(location=(centroid.y, centroid.x), zoom_start=11)
+layers.append(choropleth_layer)
 
-# Add a choropleth layer to the map
-folium.Choropleth(
-    geo_data=geojson_data,
-    name="choropleth",
-    data=data,
-    columns=["CSA2020", "wrkout20"],
-    key_on="feature.properties.CSA2020",
-    fill_color="YlGn",
-    fill_opacity=0.7,
-    line_opacity=0.2,
-    legend_name="Percent of Employed Residents who Work Outside the City"
-).add_to(map_baltimore)
-
-# Apply zoom and highlight only if a specific community statistical area is selected
+# Highlight the selected community statistical area
 if selected_tract != 'All':
     selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == selected_tract), None)
     if selected_geom:
-        # Calculate the centroid for zooming
-        selected_gdf = gpd.GeoDataFrame.from_features([selected_geom])
-        selected_centroid = selected_gdf.geometry.centroid.unary_union.centroid
-        
-        map_baltimore.location = [selected_centroid.y, selected_centroid.x]
-        map_baltimore.zoom_start = 14
-
-        # Highlight the selected community statistical area
-        folium.GeoJson(
+        highlight_layer = pdk.Layer(
+            "GeoJsonLayer",
             selected_geom,
-            style_function=lambda x: {
-                "fillColor": "#ffaf00",
-                "color": "#ffaf00",
-                "weight": 2,
-                "fillOpacity": 0.6,
-            },
-        ).add_to(map_baltimore)
+            pickable=True,
+            stroked=True,
+            filled=True,
+            extruded=False,
+            wireframe=True,
+            get_fill_color=[255, 175, 0, 160],
+            get_line_color=[255, 175, 0],
+            get_line_width=2,
+        )
+        layers.append(highlight_layer)
+
+# Set the initial view state
+view_state = pdk.ViewState(
+    latitude=39.2904,  # Centered on Baltimore City
+    longitude=-76.6122,
+    zoom=11,
+    pitch=0,
+)
+
+# Create the deck.gl map
+deck = pdk.Deck(
+    layers=layers,
+    initial_view_state=view_state,
+    tooltip={"text": "{CSA2020}\n{wrkout20}% of residents work outside the city"},
+)
 
 # Display the map in the Streamlit app
-folium_static(map_baltimore)
+st.pydeck_chart(deck)
