@@ -57,15 +57,6 @@ for feature in geojson_data['features']:
 # Create a folium map with Esri hybrid imagery tiles
 m = folium.Map(location=[39.2904, -76.6122], zoom_start=11, scrollWheelZoom=False)
 
-# Add Esri Imagery tile layer
-folium.TileLayer(
-    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attr='Tiles © Esri',
-    name='Esri Imagery',
-    overlay=False,
-    control=True
-).add_to(m)
-
 # Add choropleth layer
 folium.Choropleth(
     geo_data=geojson_data,
@@ -78,6 +69,17 @@ folium.Choropleth(
     line_opacity=0.2,
     legend_name="Percent of Employed Residents who Work Outside the City"
 ).add_to(m)
+
+# Add Esri Imagery tile layer
+folium.TileLayer(
+    tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attr='Tiles © Esri',
+    name='Esri Imagery',
+    overlay=False,
+    control=True
+).add_to(m)
+
+
 
 # Highlight the selected community statistical area
 if st.session_state.selected_tract != 'All':
