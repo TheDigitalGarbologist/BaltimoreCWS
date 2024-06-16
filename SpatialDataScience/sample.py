@@ -29,7 +29,7 @@ st.title("Interactive Map of Baltimore City")
 
 # Sidebar for selecting census tract
 st.sidebar.title("Filter Census Tracts")
-tracts = data['CSA2010'].unique()
+tracts = data['CSA2020'].unique()
 selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tracts)
 
 # Define the center of the map
