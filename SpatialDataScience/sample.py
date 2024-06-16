@@ -2,6 +2,7 @@ import streamlit as st
 import pydeck as pdk
 import requests
 import pandas as pd
+import colorbrewer
 
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
@@ -26,10 +27,17 @@ data['wrkout20'] = data['properties.wrkout20']
 # Create a Streamlit app
 st.title("Interactive Map of Baltimore City")
 
-# Sidebar for selecting community statistical area
-st.sidebar.title("Filter Community Statistical Area")
-tracts = ['All'] + list(data['CSA2020'].unique())
-selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
+# Prepare color ramp
+color_ramp = colorbrewer.YlGn[7]  # Using a 7-class Yellow-Green color ramp
+
+# Function to map values to color ramp
+def map_to_color(value, min_val, max_val, color_ramp):
+    color_index = int((value - min_val) / (max_val - min_val) * (len(color_ramp) - 1))
+    return color_ramp[color_index]
+
+# Calculate min and max values for the color mapping
+min_val = data['wrkout20'].min()
+max_val = data['wrkout20'].max()
 
 # Prepare the layers for PyDeck
 layers = []
@@ -43,12 +51,24 @@ choropleth_layer = pdk.Layer(
     filled=True,
     extruded=False,
     wireframe=True,
-    get_fill_color="[255, 255, properties.wrkout20 * 5]",
+    get_fill_color=f"[255, 255, properties.wrkout20 * 5]",
     get_line_color=[0, 0, 0],
     get_line_width=1,
 )
 
 layers.append(choropleth_layer)
+
+# UI controls for selecting community statistical area and basemap
+tracts = ['All'] + list(data['CSA2020'].unique())
+selected_tract = st.selectbox("Select Community Statistical Area", tracts, index=0)
+basemap = st.selectbox("Select Basemap", ["Light", "Dark", "Satellite"], index=0)
+
+# Set the basemap style
+basemap_style = {
+    "Light": "mapbox://styles/mapbox/light-v10",
+    "Dark": "mapbox://styles/mapbox/dark-v10",
+    "Satellite": "mapbox://styles/mapbox/satellite-v9"
+}[basemap]
 
 # Highlight the selected community statistical area
 if selected_tract != 'All':
@@ -80,6 +100,7 @@ view_state = pdk.ViewState(
 deck = pdk.Deck(
     layers=layers,
     initial_view_state=view_state,
+    map_style=basemap_style,
     tooltip={"text": "{CSA2020}\n{wrkout20}% of residents work outside the city"},
 )
 
