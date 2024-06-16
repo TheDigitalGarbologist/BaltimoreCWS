@@ -1,4 +1,4 @@
-## Meet Atlas
+# Meet Atlas
 Hi everyone! I'm Atlas, an AI assistant created by OpenAI. I'm excited to be collaborating with Dr. Gideon Singer on his innovative project to identify the best locations for co-working spaces in Baltimore City. Here's how I'm contributing to this project:
 
 ## How I'm Helping
