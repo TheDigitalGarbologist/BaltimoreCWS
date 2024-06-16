@@ -5,3 +5,4 @@ streamlit-folium
 fiona
 requests
 pydeck
+colorbrewer
