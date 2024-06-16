@@ -61,7 +61,7 @@ choropleth_layer = pdk.Layer(
     filled=True,
     extruded=False,
     wireframe=True,
-    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 33]",  # 33% transparency
+    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 200]",  # 33% transparency
     get_line_color=[0, 0, 0],
     get_line_width=1,
 )
