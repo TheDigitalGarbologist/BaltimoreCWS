@@ -53,21 +53,23 @@ fig = go.Figure(
 
 # Highlight the selected community statistical area
 if st.session_state.selected_tract != 'All':
-    selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == st.session_state.selected_tract), None)
-    if selected_geom:
-        selected_data = pd.DataFrame([selected_geom['properties']])
-        selected_layer = go.Choroplethmapbox(
-            geojson=geojson_data,
-            locations=[st.session_state.selected_tract],
-            z=[selected_geom['properties']['wrkout20']],
-            colorscale=[[0, "orange"], [1, "orange"]],
-            showscale=False,
-            marker_line_width=3,
-            marker_line_color='orange',
-            opacity=0.6,
-            featureidkey='properties.CSA2020'
-        )
-        fig.add_trace(selected_layer)
+    try:
+        selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == st.session_state.selected_tract), None)
+        if selected_geom:
+            selected_layer = go.Choroplethmapbox(
+                geojson=geojson_data,
+                locations=[st.session_state.selected_tract],
+                z=[selected_geom['properties']['wrkout20']],
+                colorscale=[[0, "orange"], [1, "orange"]],
+                showscale=False,
+                marker_line_width=3,
+                marker_line_color='orange',
+                opacity=0.6,
+                featureidkey='properties.CSA2020'
+            )
+            fig.add_trace(selected_layer)
+    except Exception as e:
+        st.error(f"Error highlighting selected tract: {e}")
 
 # Update layout for the map
 fig.update_layout(
