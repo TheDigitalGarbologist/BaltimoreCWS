@@ -32,10 +32,11 @@ st.sidebar.title("Filter Census Tracts")
 tracts = data['CSA2020'].unique()
 selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tracts)
 
-# Define the center of the map
-baltimore_coords = [39.2904, -76.6122]
+# Convert GeoJSON to GeoDataFrame
+gdf = gpd.GeoDataFrame.from_features(geojson_data["features"])
+
 # Calculate the centroid of the entire GeoDataFrame
-centroid = data.geometry.centroid.unary_union.centroid
+centroid = gdf.geometry.centroid.unary_union.centroid
 
 # Create a Folium map centered on Baltimore City
 map_baltimore = folium.Map(location=centroid, zoom_start=11)
