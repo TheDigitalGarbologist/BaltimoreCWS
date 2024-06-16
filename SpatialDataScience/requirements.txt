@@ -1,6 +1,7 @@
 geopandas
 folium
 streamlit
+streamlit-folium
 fiona
 requests
 
