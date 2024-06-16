@@ -36,6 +36,24 @@ tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 st.session_state.selected_tract = selected_tract
 
+# Define opacity settings
+fill_opacity = 0.75
+marker_line_opacity = 1.0
+
+# Create customized color scale with defined opacity
+color_ramp = [
+    [0, f'rgba(247, 251, 255, {fill_opacity})'],
+    [0.1, f'rgba(222, 235, 247, {fill_opacity})'],
+    [0.2, f'rgba(198, 219, 239, {fill_opacity})'],
+    [0.3, f'rgba(158, 202, 225, {fill_opacity})'],
+    [0.4, f'rgba(107, 174, 214, {fill_opacity})'],
+    [0.5, f'rgba(66, 146, 198, {fill_opacity})'],
+    [0.6, f'rgba(33, 113, 181, {fill_opacity})'],
+    [0.7, f'rgba(8, 81, 156, {fill_opacity})'],
+    [0.8, f'rgba(8, 48, 107, {fill_opacity})'],
+    [1, f'rgba(3, 19, 43, {fill_opacity})']
+]
+
 # Create Plotly map
 fig = go.Figure(
     go.Choroplethmapbox(
@@ -43,10 +61,11 @@ fig = go.Figure(
         featureidkey='properties.CSA2020',
         locations=data['CSA2020'],
         z=data['wrkout20'],
-        colorscale='Blues',
+        colorscale=color_ramp,
         zauto=True,
         showscale=True,
-        marker_line_width=0.5
+        marker_line_width=0.5,
+        marker_line_color=f'rgba(0, 0, 0, {marker_line_opacity})'
     )
 )
 
@@ -59,10 +78,10 @@ if st.session_state.selected_tract != 'All':
                 geojson=geojson_data,
                 locations=[st.session_state.selected_tract],
                 z=[selected_geom['properties']['wrkout20']],
-                colorscale=[[0, "orange"], [1, "orange"]],
+                colorscale=[[0, f'rgba(255, 175, 0, {fill_opacity})'], [1, f'rgba(255, 175, 0, {fill_opacity})']],
                 showscale=False,
                 marker_line_width=3,
-                marker_line_color='orange',
+                marker_line_color=f'rgba(255, 175, 0, {marker_line_opacity})',
                 featureidkey='properties.CSA2020'
             )
             fig.add_trace(selected_layer)
