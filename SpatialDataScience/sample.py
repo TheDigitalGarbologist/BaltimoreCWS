@@ -56,7 +56,7 @@ folium.Choropleth(
 ).add_to(map_baltimore)
 
 # Zoom to the selected census tract
-selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2010'] == selected_tract), None)
+selected_geom = next((feature for feature in geojson_data['features'] if feature['properties']['CSA2020'] == selected_tract), None)
 if selected_geom:
     centroid = selected_geom['geometry']['coordinates'][0][0]  # Correctly extract the centroid
     map_baltimore.location = [centroid[1], centroid[0]]
