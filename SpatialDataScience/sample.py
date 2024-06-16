@@ -27,8 +27,23 @@ data['wrkout20'] = data['properties.wrkout20']
 # Create a Streamlit app
 st.title("Interactive Map of Baltimore City")
 
-# Prepare color ramp
-color_ramp = colorbrewer.YlGn[7]  # Using a 7-class Yellow-Green color ramp
+# Sidebar for selecting community statistical area
+st.sidebar.title("Filter Community Statistical Area")
+tracts = ['All'] + list(data['CSA2020'].unique())
+selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
+
+# Basemap selector at the bottom
+basemap = st.selectbox("Select Basemap", ["Light", "Dark", "Satellite"], index=2, key='basemap_selector')
+
+# Set the basemap style
+basemap_style = {
+    "Light": "mapbox://styles/mapbox/light-v10",
+    "Dark": "mapbox://styles/mapbox/dark-v10",
+    "Satellite": "mapbox://styles/mapbox/satellite-v9"
+}[basemap]
+
+# Prepare color ramp (blue chromatic scale)
+color_ramp = colorbrewer.Blues[7]  # Using a 7-class Blues color ramp
 
 # Function to map values to color ramp
 def map_to_color(value, min_val, max_val, color_ramp):
@@ -51,24 +66,12 @@ choropleth_layer = pdk.Layer(
     filled=True,
     extruded=False,
     wireframe=True,
-    get_fill_color=f"[255, 255, properties.wrkout20 * 5]",
+    get_fill_color=f"[255 - properties.wrkout20 * 2, 255 - properties.wrkout20 * 5, 255]",
     get_line_color=[0, 0, 0],
     get_line_width=1,
 )
 
 layers.append(choropleth_layer)
-
-# UI controls for selecting community statistical area and basemap
-tracts = ['All'] + list(data['CSA2020'].unique())
-selected_tract = st.selectbox("Select Community Statistical Area", tracts, index=0)
-basemap = st.selectbox("Select Basemap", ["Light", "Dark", "Satellite"], index=0)
-
-# Set the basemap style
-basemap_style = {
-    "Light": "mapbox://styles/mapbox/light-v10",
-    "Dark": "mapbox://styles/mapbox/dark-v10",
-    "Satellite": "mapbox://styles/mapbox/satellite-v9"
-}[basemap]
 
 # Highlight the selected community statistical area
 if selected_tract != 'All':
