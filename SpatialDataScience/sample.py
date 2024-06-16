@@ -35,7 +35,7 @@ selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tract
 # Define the center of the map
 baltimore_coords = [39.2904, -76.6122]
 # Calculate the centroid of the entire GeoDataFrame
-centroid = gdf.geometry.centroid.unary_union.centroid
+centroid = data.geometry.centroid.unary_union.centroid
 
 # Create a Folium map centered on Baltimore City
 map_baltimore = folium.Map(location=centroid, zoom_start=11)
