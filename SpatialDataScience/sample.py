@@ -46,7 +46,6 @@ fig = go.Figure(
         colorscale='Blues',
         zauto=True,
         showscale=True,
-        marker_opacity=0.7,
         marker_line_width=0.5
     )
 )
@@ -64,7 +63,6 @@ if st.session_state.selected_tract != 'All':
                 showscale=False,
                 marker_line_width=3,
                 marker_line_color='orange',
-                opacity=0.6,
                 featureidkey='properties.CSA2020'
             )
             fig.add_trace(selected_layer)
