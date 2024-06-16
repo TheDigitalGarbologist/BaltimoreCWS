@@ -36,7 +36,7 @@ selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tract
 baltimore_coords = [39.2904, -76.6122]
 
 # Create a Folium map centered on Baltimore City
-map_baltimore = folium.Map(location=baltimore_coords, zoom_start=10)
+map_baltimore = folium.Map(location=baltimore_coords, zoom_start=11)
 
 # Add a choropleth layer to the map
 folium.Choropleth(
