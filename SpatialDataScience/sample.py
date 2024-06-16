@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import requests
+import plotly.express as px
 
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
@@ -38,12 +39,12 @@ st.session_state.selected_tract = selected_tract
 
 # Color ramp options
 color_ramps = {
-    'Blues': 'Blues',
-    'Viridis': 'Viridis',
-    'Cividis': 'Cividis',
-    'Inferno': 'Inferno',
-    'Magma': 'Magma',
-    'Plasma': 'Plasma'
+    'Blues': px.colors.sequential.Blues,
+    'Viridis': px.colors.sequential.Viridis,
+    'Cividis': px.colors.sequential.Cividis,
+    'Inferno': px.colors.sequential.Inferno,
+    'Magma': px.colors.sequential.Magma,
+    'Plasma': px.colors.sequential.Plasma
 }
 selected_color_ramp = st.sidebar.selectbox("Select Color Ramp", list(color_ramps.keys()), index=0)
 
@@ -53,16 +54,10 @@ marker_line_opacity = 1.0
 
 # Function to generate RGBA colorscale with defined opacity
 def generate_colorscale(base_colors, opacity):
-    return [[i/len(base_colors), f'rgba{color[:-1]}, {opacity})'] for i, color in enumerate(base_colors)]
+    return [[i / (len(base_colors) - 1), f'rgba({int(color[1:3], 16)}, {int(color[3:5], 16)}, {int(color[5:7], 16)}, {opacity})'] for i, color in enumerate(base_colors)]
 
 # Create customized color scale with defined opacity
-base_colors = [
-    'rgb(247, 251, 255)', 'rgb(222, 235, 247)', 'rgb(198, 219, 239)',
-    'rgb(158, 202, 225)', 'rgb(107, 174, 214)', 'rgb(66, 146, 198)',
-    'rgb(33, 113, 181)', 'rgb(8, 81, 156)', 'rgb(8, 48, 107)', 'rgb(3, 19, 43)'
-]
-
-color_ramp = generate_colorscale(base_colors, fill_opacity)
+color_ramp = generate_colorscale(color_ramps[selected_color_ramp], fill_opacity)
 
 # Create Plotly map
 fig = go.Figure(
@@ -71,11 +66,12 @@ fig = go.Figure(
         featureidkey='properties.CSA2020',
         locations=data['CSA2020'],
         z=data['wrkout20'],
-        colorscale=color_ramps[selected_color_ramp],
+        colorscale=color_ramp,
         zauto=True,
         showscale=True,
         marker_line_width=0.5,
-        marker_line_color=f'rgba(0, 0, 0, {marker_line_opacity})'
+        marker_line_color=f'rgba(0, 0, 0, {marker_line_opacity})',
+        hoverinfo="location+z"
     )
 )
 
