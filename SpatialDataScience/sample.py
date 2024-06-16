@@ -22,7 +22,7 @@ geojson_data = get_geojson()
 # Extracting the relevant data for the choropleth layer
 data = pd.json_normalize(geojson_data['features'])
 data['CSA2020'] = data['properties.CSA2020']
-data['wrkout20'] = data['properties.wrkout20]
+data['wrkout20'] = data['properties.wrkout20']
 
 # Create a Streamlit app
 st.title('Interactive Map of Baltimore City")
