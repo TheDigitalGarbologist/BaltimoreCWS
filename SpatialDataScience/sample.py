@@ -56,7 +56,6 @@ for feature in geojson_data['features']:
 
 # Create a folium map with Esri hybrid imagery tiles
 m = folium.Map(location=[39.2904, -76.6122], zoom_start=11, scrollWheelZoom=False)
-
 # Add Esri World Imagery Labels tile layer last to appear above the choropleth
 folium.TileLayer(
     tiles='https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
@@ -102,6 +101,8 @@ if st.session_state.selected_tract != 'All':
                 "fillOpacity": 0.6,
             },
         ).add_to(m)
+
+
 
 # Add layer control
 folium.LayerControl().add_to(m)
