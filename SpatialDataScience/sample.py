@@ -7,7 +7,7 @@ import pandas as pd
 # Function to get GeoJSON data from ArcGIS REST service
 @st.cache_data
 def get_geojson():
-    url = "https://services1.arcgis.com/mVFRs7NF4iFitgbY/ArcGIS/rest/services/Popchg/FeatureServer/0/query"
+    url = "https://services1.arcgis.com/mVFRs7NF4iFitgbY/ArcGIS/rest/services/Wrkout/FeatureServer/0/query"
     params = {
         "where": "1=1",
         "outFields": "*",
@@ -21,8 +21,8 @@ geojson_data = get_geojson()
 
 # Extracting the relevant data for the choropleth layer
 data = pd.json_normalize(geojson_data['features'])
-data['CSA2010'] = data['properties.CSA2010']
-data['popchg20'] = data['properties.popchg20']
+data['CSA2020'] = data['properties.CSA2020']
+data['wrkout20'] = data['properties.wrkout20]
 
 # Create a Streamlit app
 st.title('Interactive Map of Baltimore City")
@@ -30,7 +30,7 @@ st.title('Interactive Map of Baltimore City")
 # Sidebar for selecting census tract
 st.sidebar.title("Filter Census Tracts")
 tracts = data['CSA2010'].unique()
-selected_tract = st.sidebar.selectbox("Select Census Tract", tracts)
+selected_tract = st.sidebar.selectbox("Select Communtiy Statistical Area", tracts)
 
 # Define the center of the map
 baltimore_coords = [39.2904, -76.6122]
@@ -43,12 +43,12 @@ folium.Choropleth(
     geo_data=geojson_data,
     name="choropleth",
     data=data,
-    columns=["CSA2010", "popchg20"],
-    key_on="feature.properties.CSA2010",
+    columns=["CSA2020", "wrkout20"],
+    key_on="feature.properties.CSA2020",
     fill_color="YlGn",
     fill_opacity=0.7,
     line_opacity=0.2,
-    legend_name="Population Change (2020)"
+    legend_name="Percent of Employed Residents who Work Outside the City"
 ).add_to(map_baltimore)
 
 # Zoom to the selected census tract
