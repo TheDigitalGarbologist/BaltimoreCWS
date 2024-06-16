@@ -4,5 +4,4 @@ streamlit
 streamlit-folium
 fiona
 requests
-pydeck
-colorbrewer
+geemap
