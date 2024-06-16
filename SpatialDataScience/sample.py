@@ -25,7 +25,7 @@ data['CSA2010'] = data['properties.CSA2010']
 data['popchg20'] = data['properties.popchg20']
 
 # Create a Streamlit app
-st.title('Interactive Map of Baltimore City with Census Tracts')
+st.title('Interactive Map of Baltimore City)
 
 # Sidebar for selecting census tract
 st.sidebar.title("Filter Census Tracts")
@@ -36,7 +36,7 @@ selected_tract = st.sidebar.selectbox("Select Census Tract", tracts)
 baltimore_coords = [39.2904, -76.6122]
 
 # Create a Folium map centered on Baltimore City
-map_baltimore = folium.Map(location=baltimore_coords, zoom_start=8)
+map_baltimore = folium.Map(location=baltimore_coords, zoom_start=10)
 
 # Add a choropleth layer to the map
 folium.Choropleth(
