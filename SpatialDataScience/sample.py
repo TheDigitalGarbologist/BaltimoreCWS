@@ -71,8 +71,8 @@ if st.session_state.selected_tract != 'All':
 
 # Update layout for the map
 fig.update_layout(
-    mapbox_style="carto-positron",
-    mapbox_zoom=11,
+    mapbox_style="satellite-streets-v12",
+    mapbox_zoom=10,
     mapbox_center={"lat": 39.2904, "lon": -76.6122},
     margin={"r":0,"t":0,"l":0,"b":0},
     coloraxis_colorbar={
