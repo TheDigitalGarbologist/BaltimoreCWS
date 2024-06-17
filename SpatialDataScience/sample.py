@@ -65,7 +65,7 @@ color_maps = {
 
 def get_color(value, min_val, max_val, color_map):
     color_idx = int((value - min_val) / (max_val - min_val) * (len(color_map) - 1))
-    return color_map[color_idx]
+    return color_map[color_idx] + [int(fill_opacity * 255)]
 
 data['color'] = data['wrkout20'].apply(get_color, args=(data['wrkout20'].min(), data['wrkout20'].max(), color_maps[selected_color_ramp]))
 
@@ -77,7 +77,7 @@ layer = pdk.Layer(
     stroked=True,
     filled=True,
     get_fill_color="color",
-    get_line_color=[0, 0, 0],
+    get_line_color=[0, 0, 0, int(marker_line_opacity * 255)],
     get_line_width=1,
 )
 
@@ -98,70 +98,70 @@ r = pdk.Deck(
     tooltip={"text": "{CSA2020}\n{wrkout20}% of residents work outside the city"},
 )
 
-# Display the map in the Streamlit app
-st.pydeck_chart(r)
+# Layout with columns for legend and map
+col1, col2 = st.columns([1, 4])
 
-# Function to create HTML legend
-def create_legend(labels: list) -> str:
-    """Creates an HTML legend from a list dictionary of the format {'text': str, 'color': [r, g, b]}"""
-    labels = list(labels)
-    for label in labels:
-        assert label['color'] and label['text']
-        assert len(label['color']) in (3, 4)
-        label['color'] = ', '.join([str(c) for c in label['color']])
-    legend_template = jinja2.Template('''
-    <style>
-      .legend {
-        width: 150px;
-        background: white;
-        padding: 10px;
-        border-radius: 5px;
-        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-        position: absolute;
-        bottom: 40px;
-        left: 40px;
-        z-index: 1000;
-      }
-      .legend .square {
-        height: 10px;
-        width: 10px;
-        border: 1px solid grey;
-      }
-      .legend .left {
-        float: left;
-        margin-right: 10px;
-      }
-      .legend .right {
-        float: right;
-      }
-      .legend .clear {
-        clear: both;
-      }
-    </style>
-    <div class='legend'>
-      <h4>Legend</h4>
-      {% for label in labels %}
-      <div>
-        <div class="square left" style="background:rgba({{ label['color'] }})"></div>
-        <span class="right">{{label['text']}}</span>
-        <div class="clear"></div>
-      </div>
-      {% endfor %}
-    </div>
-    ''')
-    html_str = legend_template.render(labels=labels)
-    return html_str
+with col1:
+    # Create the legend labels
+    min_val = data['wrkout20'].min()
+    max_val = data['wrkout20'].max()
+    steps = len(color_maps[selected_color_ramp])
+    legend_labels = []
+    for i in range(steps):
+        value = min_val + (max_val - min_val) * (i / steps)
+        color = get_color(value, min_val, max_val, color_maps[selected_color_ramp])
+        legend_labels.append({'text': f'{value:.1f}', 'color': color})
 
-# Create the legend labels
-min_val = data['wrkout20'].min()
-max_val = data['wrkout20'].max()
-steps = len(color_maps[selected_color_ramp])
-legend_labels = []
-for i in range(steps):
-    value = min_val + (max_val - min_val) * (i / steps)
-    color = get_color(value, min_val, max_val, color_maps[selected_color_ramp])
-    legend_labels.append({'text': f'{value:.1f}', 'color': color})
+    # Function to create HTML legend
+    def create_legend(labels: list) -> str:
+        """Creates an HTML legend from a list dictionary of the format {'text': str, 'color': [r, g, b]}"""
+        labels = list(labels)
+        for label in labels:
+            assert label['color'] and label['text']
+            assert len(label['color']) in (3, 4)
+            label['color'] = ', '.join([str(c) for c in label['color']])
+        legend_template = jinja2.Template('''
+        <style>
+          .legend {
+            width: 150px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+          }
+          .legend .square {
+            height: 10px;
+            width: 10px;
+            border: 1px solid grey;
+          }
+          .legend .left {
+            float: left;
+            margin-right: 10px;
+          }
+          .legend .right {
+            float: right;
+          }
+          .legend .clear {
+            clear: both;
+          }
+        </style>
+        <div class='legend'>
+          <h4>Legend</h4>
+          {% for label in labels %}
+          <div>
+            <div class="square left" style="background:rgba({{ label['color'] }})"></div>
+            <span class="right">{{label['text']}}</span>
+            <div class="clear"></div>
+          </div>
+          {% endfor %}
+        </div>
+        ''')
+        html_str = legend_template.render(labels=labels)
+        return html_str
 
-# Create and display the legend
-legend_html = create_legend(legend_labels)
-html(legend_html)
+    # Create and display the legend
+    legend_html = create_legend(legend_labels)
+    html(legend_html)
+
+with col2:
+    st.pydeck_chart(r)
