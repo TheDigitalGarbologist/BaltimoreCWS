@@ -117,6 +117,10 @@ def create_legend(labels: list) -> str:
         padding: 10px;
         border-radius: 5px;
         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        position: absolute;
+        bottom: 40px;
+        left: 40px;
+        z-index: 1000;
       }
       .legend .square {
         height: 10px;
