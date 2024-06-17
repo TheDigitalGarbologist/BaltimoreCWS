@@ -52,6 +52,10 @@ min_val = data['wrkout20'].min()
 max_val = data['wrkout20'].max()
 data['fill_color'] = data['wrkout20'].apply(lambda x: get_color(x, min_val, max_val))
 
+# Adding colors to geojson data
+for feature, color in zip(geojson_data['features'], data['fill_color']):
+    feature['properties']['fill_color'] = color
+
 # Create pydeck layer
 layer = pdk.Layer(
     "GeoJsonLayer",
