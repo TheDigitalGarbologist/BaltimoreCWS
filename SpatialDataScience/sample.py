@@ -39,10 +39,6 @@ tracts = ['All'] + list(data['CSA2020'].unique())
 selected_tract = st.sidebar.selectbox("Select Community Statistical Area", tracts, index=0)
 st.session_state.selected_tract = selected_tract
 
-# Define opacity settings
-fill_opacity = 0.75
-marker_line_opacity = 1.0
-
 # Inferno color ramp
 color_ramp = plt.cm.inferno
 
@@ -56,9 +52,6 @@ min_val = data['wrkout20'].min()
 max_val = data['wrkout20'].max()
 data['fill_color'] = data['wrkout20'].apply(lambda x: get_color(x, min_val, max_val))
 
-# Convert fill_color to the appropriate format for pydeck
-data['fill_color'] = data['fill_color'].apply(lambda x: [x[0], x[1], x[2]])
-
 # Create pydeck layer
 layer = pdk.Layer(
     "GeoJsonLayer",
@@ -66,8 +59,8 @@ layer = pdk.Layer(
     pickable=True,
     stroked=True,
     filled=True,
-    get_fill_color="properties.fill_color",
-    get_line_color=[0, 0, 0, int(marker_line_opacity * 255)],
+    get_fill_color="[properties.fill_color[0], properties.fill_color[1], properties.fill_color[2], 255]",
+    get_line_color=[0, 0, 0, 255],
     get_line_width=1,
 )
 
@@ -89,7 +82,7 @@ r = pdk.Deck(
 )
 
 # Create the legend with Matplotlib
-fig, ax = plt.subplots(figsize=(6, 1))
+fig, ax = plt.subplots(figsize=(8, 2))
 fig.subplots_adjust(bottom=0.5)
 
 norm = plt.Normalize(vmin=min_val, vmax=max_val)
@@ -103,11 +96,6 @@ cb = fig.colorbar(
 # Save the legend as an image
 fig.savefig("legend.png")
 
-# Layout with columns for legend and map
-col1, col2 = st.columns([1, 4])
-
-with col1:
-    st.image("legend.png")
-
-with col2:
-    st.pydeck_chart(r)
+# Display the legend and map in Streamlit
+st.image("legend.png", use_column_width=True)
+st.pydeck_chart(r)
