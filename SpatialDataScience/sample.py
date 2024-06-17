@@ -2,7 +2,8 @@ import streamlit as st
 import pydeck as pdk
 import pandas as pd
 import requests
-import jinja2
+import matplotlib.pyplot as plt
+import numpy as np
 from streamlit.components.v1 import html
 
 # Function to get GeoJSON data from ArcGIS REST service
@@ -43,15 +44,20 @@ fill_opacity = 0.75
 marker_line_opacity = 1.0
 
 # Inferno color ramp
-color_ramp = [[0, 'rgb(0, 0, 4)'], [0.1, 'rgb(31, 12, 72)'], [0.2, 'rgb(85, 15, 109)'], [0.3, 'rgb(136, 34, 106)'], [0.4, 'rgb(186, 54, 85)'], [0.5, 'rgb(227, 89, 51)'], [0.6, 'rgb(249, 140, 10)'], [0.7, 'rgb(252, 208, 62)'], [0.8, 'rgb(252, 255, 164)'], [1, 'rgb(255, 255, 255)']]
+color_ramp = plt.cm.inferno
 
 def get_color(value, min_val, max_val):
-    color_idx = int((value - min_val) / (max_val - min_val) * (len(color_ramp) - 1))
-    color = color_ramp[color_idx][1]
-    r, g, b = [int(c) for c in color[4:-1].split(',')]
-    return [r, g, b, int(fill_opacity * 255)]
+    normalized_value = (value - min_val) / (max_val - min_val)
+    color = color_ramp(normalized_value)
+    return [int(c * 255) for c in color[:3]]
 
-data['color'] = data['wrkout20'].apply(get_color, args=(data['wrkout20'].min(), data['wrkout20'].max()))
+# Apply colors to data
+min_val = data['wrkout20'].min()
+max_val = data['wrkout20'].max()
+data['fill_color'] = data['wrkout20'].apply(lambda x: get_color(x, min_val, max_val))
+
+# Convert fill_color to the appropriate format for pydeck
+data['fill_color'] = data['fill_color'].apply(lambda x: [x[0], x[1], x[2]])
 
 # Create pydeck layer
 layer = pdk.Layer(
@@ -60,7 +66,7 @@ layer = pdk.Layer(
     pickable=True,
     stroked=True,
     filled=True,
-    get_fill_color="color",
+    get_fill_color="properties.fill_color",
     get_line_color=[0, 0, 0, int(marker_line_opacity * 255)],
     get_line_width=1,
 )
@@ -82,70 +88,26 @@ r = pdk.Deck(
     tooltip={"text": "{CSA2020}\n{wrkout20}% of residents work outside the city"},
 )
 
+# Create the legend with Matplotlib
+fig, ax = plt.subplots(figsize=(6, 1))
+fig.subplots_adjust(bottom=0.5)
+
+norm = plt.Normalize(vmin=min_val, vmax=max_val)
+cb = fig.colorbar(
+    plt.cm.ScalarMappable(cmap=color_ramp, norm=norm),
+    cax=ax,
+    orientation='horizontal',
+    label='% of residents work outside the city'
+)
+
+# Save the legend as an image
+fig.savefig("legend.png")
+
 # Layout with columns for legend and map
 col1, col2 = st.columns([1, 4])
 
 with col1:
-    # Create the legend labels
-    min_val = data['wrkout20'].min()
-    max_val = data['wrkout20'].max()
-    steps = len(color_ramp)
-    legend_labels = []
-    for i in range(steps):
-        value = min_val + (max_val - min_val) * (i / (steps - 1))
-        color = get_color(value, min_val, max_val)
-        legend_labels.append({'text': f'{value:.1f}', 'color': color})
-
-    # Function to create HTML legend
-    def create_legend(labels: list) -> str:
-        """Creates an HTML legend from a list dictionary of the format {'text': str, 'color': [r, g, b, a]}"""
-        labels = list(labels)
-        for label in labels:
-            assert label['color'] and label['text']
-            assert len(label['color']) == 4
-            label['color'] = ', '.join([str(c) for c in label['color']])
-        legend_template = jinja2.Template('''
-        <style>
-          .legend {
-            width: 150px;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-          }
-          .legend .square {
-            height: 10px;
-            width: 10px;
-            border: 1px solid grey;
-          }
-          .legend .left {
-            float: left;
-            margin-right: 10px;
-          }
-          .legend .right {
-            float: right;
-          }
-          .legend .clear {
-            clear: both;
-          }
-        </style>
-        <div class='legend'>
-          <h4>Legend</h4>
-          {% for label in labels %}
-          <div>
-            <div class="square left" style="background:rgba({{ label['color'] }})"></div>
-            <span class="right">{{label['text']}}</span>
-            <div class="clear"></div>
-          </div>
-          {% endfor %}
-        </div>
-        ''')
-        html_str = legend_template.render(labels=labels)
-        return html_str
-
-    # Create and display the legend
-    legend_html = create_legend(legend_labels)
-    html(legend_html)
+    st.image("legend.png")
 
 with col2:
     st.pydeck_chart(r)
